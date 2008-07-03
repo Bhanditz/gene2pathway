@@ -1,0 +1,57 @@
+\begin{thebibliography}{1}
+
+\bibitem{Hahne2008}
+F.~Hahne, A.~Mehrle, D.~Arlt, A.~Poustka, S.~Wiemann, and T.~Beissbarth.
+\newblock Extending pathways based on gene lists using interpro domain
+  signatures.
+\newblock {\em BMC Bioinformatics}, 9:3, 2008.
+
+\bibitem{Kanehisa2008KEGG}
+M.~Kanehisa, M.~Araki, S.~Goto, M.~Hattori, M.~Hirakawa, M.~Itoh, T.~Katayama,
+  S.~Kawashima, S.~Okuda, T.~Tokimatsu, and Y.~Yamanishi.
+\newblock Kegg for linking genomes to life and the environment.
+\newblock {\em Nucleic Acids Res.}, 36:D480 -- D484, 2008.
+
+\bibitem{Kersey2004IPI}
+D.~Kersey, J.~Duarte, A.~Williams, Y.~Karavidopoulou, E.~Birney, and
+  R.~Apweiler.
+\newblock {The International Protein Index: an integrated database for
+  proteomics experiments}.
+\newblock {\em Proteomics}, 4(7):1985 -- 1988, 2004.
+
+\bibitem{Maglott2007Entrez}
+D.~Maglott, J.~Ostell, K.~Pruitt, and T.~Tatusova.
+\newblock {Entrez: Gene-Centered Informaiton at NCBI}.
+\newblock {\em Nucleic Acids Res.}, 35:D26 -- D31, 2007.
+
+\bibitem{Mulder2008InterPro}
+N.~J. Mulder, R.~Apweiler, T.~K. Attwood, A.~Bairoch, A.~Bateman, D.~Binns,
+  P.~Bork, V.~Buillard, L.~Cerutti, R.~Copley, E.~Courcelle, U.~Das,
+  L.~Daugherty, M.~Dibley, R.~Finn, W.~Fleischmann, J.~Gough, D.~Haft, N.~Hulo,
+  S.~Hunter, D.~Kahn, A.~Kanapin, A.~Kejariwal, A.~Labarga, P.~S.
+  Langendijk-Genevaux, D.~Lonsdale, R.~Lopez, I.~Letunic, M.~Madera, J.~Maslen,
+  C.~McAnulla, J.~McDowall, J.~Mistry, A.~Mitchell, A.~N. Nikolskaya,
+  S.~Orchard, C.~O. nd~Robert~Petryszak, J.~D. Selengut, C.~J.~A. Sigrist,
+  P.~D. Thomas, F.~V. nd~Derek~Wilson, C.~H. Wu, and C.~Yeats.
+\newblock {New developments in the InterPro database}.
+\newblock {\em Nucleic Acids Res.}, 35:D224 -- D228, 2008.
+
+\bibitem{Smith2004Limma}
+G.~Smyth.
+\newblock {Linear models and empirical Bayes methods for assessing differential
+  expression in microarray experiments}.
+\newblock {\em Statistical Applications in Genetics and Molecular Biology},
+  3(1), 2004.
+
+\bibitem{GOConsortium04}
+{The Gene Ontology Consortium}.
+\newblock The gene ontology ({GO}) database and informatics resource.
+\newblock {\em Nucleic Acids Research}, 32:D258--D261, 2004.
+
+\bibitem{Tusher2001SAM}
+V.~Tusher, R.~Tibshirani, and G.~Chu.
+\newblock Significance analysis of microarrays applied to the ionizing
+  radiation response.
+\newblock {\em Proc. Nat. Acad. Sci.}, 98:5116--5121, 2001.
+
+\end{thebibliography}

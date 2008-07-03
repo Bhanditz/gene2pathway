@@ -1,0 +1,125 @@
+%\VignetteIndexEntry{gene2pathway}
+%\VignetteDepends{}
+%\VignetteKeywords{Classification}
+%\VignettePackage{gene2pathway}
+
+
+\documentclass[11pt,a4paper]{article}
+
+%\usepackage[round]{natbib}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage[latin1]{inputenc}
+\newcommand{\gene}[1]{\emph{#1}}
+
+\setlength{\parskip}{1.5ex}
+\setlength{\parindent}{0cm}
+
+% NEW COMMANDS
+% ------------------------------------------------
+\newcommand{\Robject}[1]{\texttt{#1}}
+\newcommand{\Rpackage}[1]{\textit{#1}}
+\newcommand{\Rclass}[1]{\textit{#1}}
+\newcommand{\Rfunction}[1]{{\small\texttt{#1}}}
+
+\newcommand{\myincfig}[4]{
+  \setkeys{Gin}{width=#1\textwidth}
+  \begin{figure}[htbp]
+    \begin{center}
+      #2
+      \caption{\label{#3}#4}
+    \end{center}
+  \end{figure}
+  \setkeys{Gin}{width=.8\textwidth}
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+<<no.nonsense,echo=FALSE,results=hide>>=
+rm(list=ls())
+@
+
+\title{Gene2Pathway\\Predicting Pathway Membership via Domain Signatures}
+\author{Holger Fr\"ohlich\footnote{German Cancer Research Center, Im Neuenheimer Feld 580, 69120 Heidelberg, Germany. eMail: h.froehlich@dkfz-heidelberg.de}}
+\date{\today}
+\maketitle
+
+\begin{abstract}
+Functional characterization of genes is of great importance, e.g. in microarray studies. Valueable information for this purpose can be obtained from pathway databases, like KEGG. However, only a small fraction of genes is annotated with pathway information up to now. In contrast, information on contained protein domains can be obtained for a significantly higher number of genes, e.g. from the InterPro database. 
+
+The R package \emph{gene2pathway} implements a classification model, which for a specific gene of interest can predict the mapping to a KEGG pathway, based on its domain signature. The classifier makes explicit use of the hierarchical organization of pathways in the KEGG database. Furthermore, we take into account that a specific gene can be mapped to different pathways at the same time. The classification method produces a scoring of all possible mapping positions of the gene in the KEGG hierarchy. For signaling pathways it is even possible to forecast accurately the membership to individual pathway components. 
+\end{abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+
+Microarray expression experiments have become a major high throughput analysis method during the last years. In a typical biological research setup people first rank all probes according to their differential expression, using tools like SAM or limma \cite{Smith2004Limma, Tusher2001SAM}. In a second step a biologcal characterization and interpretation of differentially expressed genes is needed. For this purpose valueable information can be obtained from databases, like the Gene Ontology \cite{GOConsortium04} or KEGG \cite{Kanehisa2008KEGG}. However, usually only a small fraction of differentially expressed genes is annotated within these databases. For example, the total number of human genes annotated in KEGG currently is about 4,000. This contrasts remarkably with the estimated number of putatuve protein encoding genes, which is more than 23,000 (counted as Entrez gene IDs in the IPI human database \cite{Kersey2004IPI,Maglott2007Entrez}). It is therefore highly important to link other sources of information with these databases to improve the quality of biological characterization. Especially interesting for this purpose is the InterPro database \cite{Mulder2008InterPro}, which offers predicted protein domain annotation for ~19,000 of all 23,000 genes in the IPI human database. Of the 4,000 genes in the KEGG database nearly all have at least one InterPro domain. Together, these comprise ~3,000 distinct InterPro domains. Protein domains very often directly correspond to some core biological function, such as DNA binding, kinase or phophorylation activity, or to cellular localization. Hence, predicted protein domains are often utilized for prediction annotations, such as in the GO database. 
+
+Hahne et al. \cite{Hahne2008} introduced a first method linking protein-domain signatures with assignments of genes to KEGG pathways. In this approach one looks for a protein domain signature being significantly enriched in a list of genes. This information is then used to find the most probable pathway these genes come from by compairing the enriched protein domain signature with all pathway domain signatures.
+
+In contrast to Hahne et al., our aim is to make a prediction and thus a biological characterization for individual genes. This broadens the applicability of our method significantly. We explicitely take into account that a specific gene can be mapped to different pathways at the same time. Furthermore, our classifier makes use of the hierarchical organization of the KEGG database in 3 levels: At the top hierarchy there are the 4 branches ``Metabolism'', ``Genetic Information Processing'', ``Environmental Information Processing'' and ``Cellular Processes'' (we do not consider ``Human Diseases'' here). On the next hierarchy level each of these branches is divided further. For instance, ``Environmental Information Processing'' contains the branches ``''Membrane Transport'', ``Signal Transduction'' and ``Signaling Molecules and Interaction''. On the third hierarchy level we have the individual KEGG pathways. We expect that a good classifier should give especially precise predictions at the top levels of the KEGG hierarchy, while at the bottom levels misclassifications are more tolerable. That means it is worse to predict a MAPK pathway (branch ``Signal Transduction'' in ``Environmental Information Processing'') gene to be involved in ``Olfactory transduction'' (branch ``Sensory System'' in ``Cellular Processes'') than to predict it as a member of some other signal transduction pathway. This behavior, leading to a hierarchical classification scheme, was encoded into an appropriate loss function within our framework. Our classifier is also able to indicate the reliability of a pathway prediction via a bagging procedure.
+
+Signaling pathways are of special importance for the functioning of biological systems. In an extension of our approach we built a hierarchical classifier that is not only able to reliably predict a gene's membership to the different signaling pathways, but also to connected pathway components within individual signaling pathways.
+
+More details on our hierarchical classification models can be found in the accompanying paper.
+ 
+
+\section{Example Usage}
+
+Usage of the R package \emph{gene2pathway} mainly involves two functions: {\tt gene2pathway} and {\tt gene2pathway.signaltrans}. {\tt gene2pathway} predicts the KEGG pathway membership for a given list of genes. The mapping of genes to InterPro domains can be done automatically via Ensembl, if Entrez gene IDs (or FlyBase IDs) are passed. Alternatively, the user can provide its own mapping in form of a list. In this case arbitrary gene identifiers can be used. Please refer to the manual pages for exact information.
+
+By default a pruned KEGG hierarchy is used in order to improve the prediction quality. More specifically, metabolic pathways are not distinguished further, and the KEGG hierarchy for ``Genetic Information Processing'' is cut at the second level. That means we only distinguish between ``Transcription'', ``Translation'' and ``Folding, Sorting and Degradation'', but not between ``RNA polymerase'' and ``Basal transcription factors''. Please have a look at http://www.genome.jp/dbget-bin/get\_htext?ko00001.keg+-f+F+C for a complete overview over the KEGG ontology. This behavior can also be changed, when the complete model is retrained, which is recommended to do regularily. For this purpose there exists the functions {\tt retrain}. We refer to the manual pages for the exact usage here.
+
+If for a given gene we suppose that it is related to signal transduction in some way, we can use the function {\tt gene2pathway.signaltrans} in order to predict the exact signaling pathway or even the signaling pathway connected component. The latter is, however, only possible for those pathways, where there exists enough mapping genes. Again this behavior can be changed by retraining the model using the function {\tt retrain.signaltrans}. The motivation for not including certain connected components into the hierarchy was that the number of mapping genes was below a certain cutoff (here: 10), which may spoil prediction performance.
+
+Below we show an example analysis with \emph{gene2pathway} for two genes: For the first we predict the branch in the KEGG hierarchy, and for the second the connected component in a specific signaling pathway. The connected component may then be visualized using the function {\tt color.pathway.by.elements}. This function uses the KEGG SOAP service and will return a URL with a gif-file.
+
+<<>>=
+library(gene2pathway)
+gene2pathway("FBgn0035006", flyBase=TRUE, organism="dme") 
+pred.comp = gene2pathway.signaltrans("387129", organism="hsa") # prediction of the signaling pathway component for Entrez gene ID 387129 for human
+pred.comp
+@
+<<eval=FALSE>>=
+url = color.pathway.by.elements("path:hsa04020",pred.comp$elemIDs[["387129"]])
+@
+
+It is important to mention that a separate prediction model for each organism is needed. Due to space restrictions of the R package we have only included a model for drosophila ("dme") and for human signaling pathways ("hsa"). Other models can be created using the functions {\tt retrain} and {\tt retrain.signaltrans}, as mentioned above. In principle one could also train a model for one organism and apply it to another one. This can be achieved by setting "organism" according to the model, one would like to use.
+
+It is possible to have a detailed look at each model in order to know, for example, which KEGG hierarchy levels can be predicted. In the following we first load the bagged model for drosophila and then explore it a little bit. It is important to know that here the bagged model consists of 11 individual models of class ``model''.
+<<>>=
+data(classificationModel_dme)     # load the bagged model
+modelKEGG[[1]]$allpathways        # all employed KEGG hierarchy levels
+modelKEGG[[1]]$used_domains[[10]] # Which InterPro domains are used by the first model to detect Phosphatidylinositol signaling?
+modelKEGG[[2]]$W                  # How are input code vectors weighted?
+@
+
+
+
+
+\bibliographystyle{abbrv}
+\bibliography{references}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Session Information}
+
+The version number of R and packages loaded for generating the vignette were:
+
+
+<<echo=FALSE,results=tex>>=
+toLatex(sessionInfo())
+@
+
+
+\end{document}
+
+%
+%   end of file
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
