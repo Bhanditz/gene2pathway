@@ -52,8 +52,8 @@ getInterProDomains = function(geneIDs, gene2Domains=NULL, organism="hsa", alldom
 		if(!flyBase)
 			tmp <- getBM(attributes=c("entrezgene", "interpro"), filters="entrezgene", values=geneIDs, mart = ensembl)
 		else
-			tmp <- getBM(attributes=c("flybase_gene_id", "interpro"), filters="flybase_gene_id", values=geneIDs, mart = ensembl)
-		if(is.null(tmp))
+			tmp <- getBM(attributes=c("flybase_gene_id", "interpro"), filters="flybase_gene_id", values=geneIDs, mart = ensembl)		
+		if(is.null(tmp) | all(is.na(tmp[,"interpro"])))
 			stop("No mapping Entrez gene ID -> InterPro found!")
 		if(!flyBase)
 			gene2Domains <- split(tmp$interpro, tmp$entrezgene, drop=FALSE)		

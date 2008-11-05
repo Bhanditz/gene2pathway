@@ -1,4 +1,4 @@
-retrain = function(minnmap=30, level1Only="01100", level2Only=c("01200"), organism="hsa", gene2Domains=NULL, KEGG.package=FALSE, remove.duplicates=FALSE, use.bagging=TRUE, nbag=11){		
+retrain = function(minnmap=30, level1Only="Metabolism", level2Only="Genetic Information Processing", organism="hsa", gene2Domains=NULL, KEGG.package=FALSE, remove.duplicates=FALSE, use.bagging=TRUE, nbag=11){		
 	
 	# 1. train codes
 	# 2. used codes to train structure

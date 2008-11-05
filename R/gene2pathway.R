@@ -6,7 +6,7 @@ gene2pathway = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism
 	if(exists("organismKEGG", envir=gene2pathwayEnv))
 		old.organism = get("organismKEGG", envir=gene2pathwayEnv)
 	else
-		old.organism = organism
+		old.organism = organism	
 	assign("organismKEGG", organism, envir=gene2pathwayEnv)
 	if(!is.null(gene2Domains))	
 		geneIDs = names(gene2Domains)
@@ -17,13 +17,13 @@ gene2pathway = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism
 		myfile = paste("classificationModel_",organism,sep="")		
 		tryCatch(data(list=myfile,package="gene2pathway", envir=gene2pathwayEnv), warning=function(w) stop("No Model for organism '", organism, "' available.\nPlease invoke 'retrain' to generate one."))
 # 		data(list=myfile,package="gene2pathway", envir=gene2pathwayEnv)
-# 		load(paste("classificationModel_",organism,".rda",sep=""), envir=gene2pathwayEnv)
+# 		load(paste("classificationModel_",organism,".rda",sep=""), envir=gene2pathwayEnv)		
 	}
-	model = get("modelKEGG", envir=gene2pathwayEnv)
+	model = get("modelKEGG", envir=gene2pathwayEnv)	
 	if(class(model) == "model"){
 		alldomains = model$alldomains		
 		pathways = model$allpathways		
-		parentPaths = model$parentPaths
+		parentPaths = model$parentPaths		
 	}
 	else{
 		alldomains = model[[1]]$alldomains				
@@ -37,11 +37,10 @@ gene2pathway = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism
 			if(!(organism %in% organisms))
 				stop(paste("Organism '", organism, "' is unknown in KEGG package! Please retry with KEGG.package=FALSE (slow). Please refer also to <URL:http://www.genome.jp/kegg-bin/create_kegg_menu> for a complete list of organisms supported by KEGG.", sep=""))	
 			if((organism == "dme") & !flyBase){
-				ensembl <- useMart("ensembl", dataset = "dmelanogaster_gene_ensembl")
-				tmp <- getBM(attributes=c("flybase_gene_id", "entrezgene"), filters="entrezgene", values=geneIDs, mart = ensembl)
-				if(is.null(geneIDs))
+				geneIDs = unlist(AnnotationDbi::mget(geneIDs, org.Dm.egFLYBASE, ifnotfound=NA))
+				geneIDs = geneIDs[!is.na(geneIDs)]
+				if(length(geneIDs) == 0)
 					stop("No mapping Entrez gene ID -> FlyBase found!")
-				geneIDs = geneIDs[,2]
 				flyBase = TRUE
 			}
 		}		
@@ -51,10 +50,10 @@ gene2pathway = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism
 			if(!(organism %in% names(organisms)))
 				stop(paste("Organism '", organism, "' is unknown in KEGG! Please refer to <URL:http://www.genome.jp/kegg-bin/create_kegg_menu> for a complete list of supported organisms.",sep=""))	
 			if(flyBase){
-				tmp <- getBM(attributes=c("flybase_gene_id", "entrezgene"), filters="flybase_gene_id", values=geneIDs, mart = ensembl)
-				if(is.null(geneIDs))
-					stop("No mapping FlyBase -> Entrez gene ID found!")
-				geneIDs = geneIDs[,2]
+				geneIDs = unlist(AnnotationDbi::mget(geneIDs, org.Dm.egFLYBASE2EG, ifnotfound=NA))
+				geneIDs = geneIDs[!is.na(geneIDs)]
+				if(length(geneIDs) == 0)
+					stop("No mapping FlyBase -> Entrez gene ID found!")				
 				flyBase = FALSE
 			}
 		}
@@ -123,8 +122,12 @@ gene2pathway = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism
 		totallist[names(KEGGgenes)] = KEGGgenes
 		byKEGG[names(KEGGgenes)] = TRUE
 	}
-
-	kegg_hierarchy = gene2pathway:::getKEGGHierarchy(level1Only=c(), level2Only=c())
+	if(exists("kegg_hierarchy", envir=gene2pathwayEnv))
+		kegg_hierarchy = get("kegg_hierarchy", envir=gene2pathwayEnv)
+	else{
+		kegg_hierarchy = gene2pathway:::getKEGGHierarchy(level1Only=c(), level2Only=c())
+		assign("kegg_hierarchy", kegg_hierarchy, envir=gene2pathwayEnv)		
+	}
 	pathnames = c(kegg_hierarchy$pathNamesLev1, kegg_hierarchy$pathNamesLev2, kegg_hierarchy$pathNamesLev3)		
 	totallist[totallist == ""] = NA
 	totallist[is.na(names(totallist))] = NA

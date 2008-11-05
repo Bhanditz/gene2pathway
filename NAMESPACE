@@ -1,4 +1,4 @@
 import(KEGG.db)
 import(kernlab)
 import(KEGGSOAP)
-export(retrain, retrain.signaltrans, gene2pathway, gene2pathway.signaltrans, getComponents, get.elements.by.pathway, color.pathway.by.elements, ORF2Entrez, Entrez2ORF)
+export(retrain, retrain.signaltrans, gene2pathway, gene2pathway.signaltrans, getComponents, get.elements.by.pathway, color.pathway.by.elements, ORF2Entrez, Entrez2ORF, test.overrepresentation)

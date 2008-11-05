@@ -1,4 +1,4 @@
-getKEGGHierarchy = function(level1Only="01100", level2Only=c("01400", "01200")){
+getKEGGHierarchy = function(level1Only="Metabolism", level2Only="Genetic Information Processing"){
 	kegg = getURL("ftp://ftp.genome.jp/pub/kegg/brite/ko/ko00001.keg")
 	kegg = unlist(strsplit(kegg,"\n"))
 	level1 = grep("A<B>", kegg)
@@ -20,6 +20,8 @@ getKEGGHierarchy = function(level1Only="01100", level2Only=c("01400", "01200")){
 	
 	code_vector = matrix(0, ncol=length(level1)+length(level2)+length(level3), nrow=length(level3))
 	dimnames(code_vector) = list(pathIDsLev3, c(pathIDsLev1,pathIDsLev2,pathIDsLev3))
+	if(length(level1Only) > 0) level1Only = pathIDsLev1[sapply(level1Only, function(l) grep(l, names(pathIDsLev1)))] 
+	if(length(level2Only) > 0) level2Only = pathIDsLev1[sapply(level2Only, function(l) grep(l, names(pathIDsLev1)))]
 	for(p in pathIDsLev3){
 		pa = unlist(parentPaths[p])		
 		code_vector[p, pa[1]] = 1	
@@ -28,7 +30,7 @@ getKEGGHierarchy = function(level1Only="01100", level2Only=c("01400", "01200")){
 		if(!(pa[1] %in% c(level1Only, level2Only)))
 			code_vector[p, p] = 1
 	}
-	code_vector = code_vector[(code_vector[,"01500"] != 1),] 	
+	code_vector = code_vector[(code_vector[,grep("Human Diseases", names(pathIDsLev1))] != 1),] 	
 	cs = colSums(code_vector)
 	code_vector = code_vector[,(cs > 0) & (cs < nrow(code_vector))]
 	list(code_vector=code_vector, parentPaths=parentPaths, pathIDsLev1=pathIDsLev1, pathIDsLev2=pathIDsLev2, pathIDsLev3=pathIDsLev3, pathNamesLev1=pathNamesLev1, pathNamesLev2=pathNamesLev2, pathNamesLev3=pathNamesLev3)

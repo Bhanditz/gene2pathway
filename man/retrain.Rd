@@ -6,7 +6,7 @@
 Retrains the hierarchical classification model. This way new information from InterPro and KEGG databases can be incorporated to give better predictions. Retraining should be done on a regular basis from time to time.
 }
 \usage{
-retrain(minnmap=30, level1Only="01100", level2Only=c("01200"), organism="hsa", gene2Domains=NULL, KEGG.package=FALSE, remove.duplicates=FALSE, use.bagging=TRUE, nbag=11)
+retrain(minnmap=30, level1Only="Metabolism", level2Only="Genetic Information Processing", organism="hsa", gene2Domains=NULL, KEGG.package=FALSE, remove.duplicates=FALSE, use.bagging=TRUE, nbag=11)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

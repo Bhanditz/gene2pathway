@@ -13,22 +13,27 @@ code_train = function(x, y, parentsLev1, parentsLev2, parentsLev12){
 		if(i %in% parentsLev1)
 			sel = 1:length(neg)
 		else if(i %in% parentsLev2)
-			sel = which(apply(y[neg,parentsLev1],1, function(x) all(x == y[pos[1],parentsLev1])))
+			sel = which(apply(y[neg,parentsLev1],1, function(xx) all(xx == y[pos[1],parentsLev1])))
 		else # i is in level3
-			sel = which(apply(y[neg,parentsLev12],1, function(x) all(x == y[pos[1],parentsLev12])))		
+			sel = which(apply(y[neg,parentsLev12],1, function(xx) all(xx == y[pos[1],parentsLev12])))
 		if(length(sel) < 20)
 			sel = sample(1:length(neg), length(pos))		
 		ytmp = ytmp[c(pos, neg[sel])]
 		xtmp = x[c(pos, neg[sel]),]								
-		cat("-->SVM training (#pos = ", length(pos), "#neg = ", length(neg[sel]), ", #features = ", ncol(xtmp), ")\n")		
-		bestC = 1	
+		cat("-->SVM training (#pos = ", length(pos), "#neg = ", length(neg[sel]), ", #features = ", ncol(xtmp), ")\n")	
+# 		if(modsel){	
+# 			C = -3:4
+# 			bestC = 10^C[which.min(sapply(C, function(CC) errorbound(xtmp, ytmp, 10^CC)))]		
+# 		}
+# 		else
+			bestC = 1	
 		cat("-->SVM training with parameter C = ", bestC,"\n")		
-		detectors[[i]] = svmlearn(xtmp, ytmp, bestC)		
+		detectors[[i]] = gene2pathway:::svmlearn(xtmp, ytmp, bestC, prob.model=FALSE)		
 		cat("-->Generating output codes\n")
 		domains[[i]] = colnames(xtmp)				
 		code[,i] = gene2pathway:::svmpredict(detectors[[i]], x[,domains[[i]]], type="decision")		
-		wabs = abs(t(unlist(alpha(detectors[[i]]))) %*% x[unlist(SVindex(detectors[[i]])),domains[[i]]])
-		keep = (wabs > 0)
+		wabs = abs(t(unlist(coef(detectors[[i]]))) %*% x[unlist(SVindex(detectors[[i]])),domains[[i]]])
+		keep = (wabs > 0)	
 		domains[[i]] = domains[[i]][keep]	
 		cat(length(domains[[i]]), " domains important\n")		
 	}
