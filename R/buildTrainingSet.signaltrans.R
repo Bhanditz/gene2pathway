@@ -4,7 +4,8 @@ buildTrainingSet.signaltrans = function(minnmap=10, organism="hsa", remove.dupli
 		stop(paste("Organism '", organism, "' unknown in KEGG! Please refer to <URL:http://www.genome.jp/kegg-bin/create_kegg_menu> for a complete list of supported organisms."))
 	cat("Retrieving KEGG information via SOAP ...\n", sep="")
 	kegg_hierarchy = gene2pathway:::getKEGGHierarchy()
-	pathways = names(which(sapply(kegg_hierarchy$parentPaths, function(p) "01320" %in% unlist(p))))
+	signaltrans = kegg_hierarchy$pathIDsLev2[grep("Signal Transduction", names(kegg_hierarchy$pathIDsLev2))]
+	pathways = names(which(sapply(kegg_hierarchy$parentPaths, function(p) signaltrans %in% unlist(p))))
 	pathways = paste("path:",organism, pathways,sep="")
 	genes = try(lapply(pathways, get.genes.by.pathway))
 	names(genes) = pathways

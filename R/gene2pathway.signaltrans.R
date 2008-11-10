@@ -39,7 +39,7 @@ gene2pathway.signaltrans = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NU
 		if(!(organism %in% names(organisms)))
 			stop(paste("Organism '", organism, "' unknown in KEGG! Please refer to <URL:http://www.genome.jp/kegg-bin/create_kegg_menu> for a complete list of supported organisms."))
 		cat("Mapping to signal transduction pathway components via KEGG database ...\n",sep="")
-		if(!(organism %in% c("hsa", "mmu", "rno"))){
+# 		if(!(organism %in% c("hsa", "mmu", "rno"))){
 			if(flyBase){
 				geneIDs = unlist(AnnotationDbi::mget(geneIDs, org.Dm.egFLYBASE2EG, ifnotfound=NA))
 				geneIDs = geneIDs[!is.na(geneIDs)]
@@ -49,9 +49,9 @@ gene2pathway.signaltrans = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NU
 			}
 			KEGG2Entrez.tab = gene2pathway:::KEGG2Entrez(organism=organism)
 			geneIDs.conv = gene2pathway:::Entrez2ORF.internal(geneIDs, KEGG2Entrez.tab, organism=organism)	
-		}
-		else
-			geneIDs.conv = geneIDs
+# 		}
+# 		else
+# 			geneIDs.conv = geneIDs
 		comp2gene = sapply(roots, function(p){
 			elems = gene2pathway:::get.elements.by.pathway(paste("path:",organism,p,sep=""))
 			compGenes = sapply(elemIDs[[p]], function(c) unlist(sapply(elems[c], function(e) e$names)))
@@ -72,10 +72,10 @@ gene2pathway.signaltrans = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NU
 				}				
 			}))				
 		})		
-		if(!(organism %in% c("hsa", "mmu", "rno"))){
+# 		if(!(organism %in% c("hsa", "mmu", "rno"))){
 			anno.genes = gene2pathway:::KEGG2Entrez(names(KEGGgenes), geneID.list=KEGG2Entrez.tab, organism=organism)
 			names(KEGGgenes) = anno.genes			
-		}
+# 		}
 		cat("done.\n")		
 		if(!is.null(gene2Domains)  && length(intersect(names(KEGGgenes), geneIDs)) == 0)
 			warning("There may be a conflict between KEGG Entrez gene / open reading frame IDs and the gene identifiers in list 'gene2Domains'.\n Gene identifiers in 'gene2Domains' should be Entrez gene IDs, if useKEGG=TRUE.")

@@ -57,7 +57,7 @@ gene2pathway = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism
 				flyBase = FALSE
 			}
 		}
-		if(!(organism %in% c("hsa", "mmu", "rno")) & !flyBase){			
+		if(!flyBase){
 			KEGG2Entrez.tab = gene2pathway:::KEGG2Entrez(organism=organism)
 			geneIDs.conv = gene2pathway:::Entrez2ORF.internal(geneIDs, KEGG2Entrez.tab, organism=organism)	
 		}
@@ -84,7 +84,7 @@ gene2pathway = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism
 			cat("Information from KEGG package available for ", length(KEGGgenes), " genes ...\n")
 			KEGGgenes = lapply(KEGGgenes, function(kg) unique(c(kg,  unlist(parentPaths[kg]))))		
 		}
-		if(!(organism %in% c("hsa", "mmu", "rno")) & !flyBase){
+		if(!flyBase  | length(grep(":", KEGGgenes)) > 0){
 			anno.genes = gene2pathway:::KEGG2Entrez(names(KEGGgenes), geneID.list=KEGG2Entrez.tab, organism=organism)
 			names(KEGGgenes) = anno.genes			
 		}
