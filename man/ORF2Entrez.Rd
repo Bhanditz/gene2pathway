@@ -22,3 +22,4 @@
 	entrez=ORF2Entrez("Dmel_CG4942", organism="dme")
 	Entrez2ORF(entrez, organism="dme") # should be "Dmel_CG4942"
 }
+\keyword{ file }% at least one, from doc/KEYWORDS

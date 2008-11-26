@@ -30,4 +30,9 @@ The model structure. See \code{\link{classificationModel}} for details.
 }
 \author{ Holger Froehlich }
 \seealso{ \code{\link{gene2pathway}}, \code{\link{classificationModel}}}
+\examples{
+\dontrun{
+	retrain(KEGG.package=TRUE, organism="dme") # retrain classification model for drosophila using information from the KEGG.db package
+}
+}
 \keyword{ file }% at least one, from doc/KEYWORDS

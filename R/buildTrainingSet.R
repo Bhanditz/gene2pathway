@@ -35,7 +35,7 @@ buildTrainingSet = function(minnmap=30, level1Only="Metabolism", level2Only="Gen
 	genes2Path = sapply(genes2Path, function(g) intersect(g, rownames(code_vector)))
 	genes2Path = genes2Path[sapply(genes2Path, length) > 0]
 	hKEGGgenes = names(genes2Path)		
-	if(!flyBase | length(grep(":", hKEGGgenes)) > 0){
+	if(length(grep(":", hKEGGgenes)) > 0){
 		hKEGGgenes = gene2pathway:::KEGG2Entrez(hKEGGgenes, organism=organism)	
 		names(genes2Path) = hKEGGgenes
 	}

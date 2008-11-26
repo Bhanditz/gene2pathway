@@ -57,12 +57,14 @@ gene2pathway = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism
 				flyBase = FALSE
 			}
 		}
-		if(!flyBase){
+		if(!flyBase & (organism != "hsa")){
 			KEGG2Entrez.tab = gene2pathway:::KEGG2Entrez(organism=organism)
 			geneIDs.conv = gene2pathway:::Entrez2ORF.internal(geneIDs, KEGG2Entrez.tab, organism=organism)	
 		}
-		else
+		else{
 			geneIDs.conv = geneIDs
+			KEGG2Entrez.tab = NULL
+		}
 		if(KEGG.package){ # fast						
 			KEGGgenes = AnnotationDbi::mget(geneIDs.conv, KEGGEXTID2PATHID, ifnotfound=NA)		
 			KEGGgenes = lapply(KEGGgenes, function(kg) sub(organism,"",kg))
@@ -71,21 +73,30 @@ gene2pathway = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism
 			KEGGgenes = lapply(KEGGgenes, function(kg) unique(c(kg,  unlist(parentPaths[kg]))))
 		}
 		else{ # slow			
-			pathways = names(list.pathways(organism))
-			path2Genes = try(lapply(pathways, get.genes.by.pathway))
-			names(path2Genes) = pathways
-			hKEGGgenes <- unique(unlist(path2Genes, use.names=FALSE))		
-			hKEGGgenes <-  hKEGGgenes[!is.na(hKEGGgenes)]					
-			genes2Path = sapply(hKEGGgenes, function(g) names(path2Genes)[sapply(path2Genes, function(p) any(g == p))]) # this is probably faster than calling get.pathways.by.genes
-			genes2Path = sapply(genes2Path, function(g) sapply(g, function(gg) sub(paste("path:",organism,sep=""),"", gg)))
-					
-			KEGGgenes = genes2Path[paste(organism,":",geneIDs.conv,sep="")]
-			KEGGgenes = KEGGgenes[!is.na(KEGGgenes)]
+			if(length(grep(":", geneIDs.conv)) == 0)
+				geneIDs.conv = paste(organism,":",geneIDs.conv,sep="")
+			if(length(geneIDs.conv) < 200)
+				genes2Path = sapply(geneIDs.conv, function(g) get.pathways.by.genes(c(g,"")))
+			else{
+				pathways = names(list.pathways(organism))
+				path2Genes = try(lapply(pathways, get.genes.by.pathway))
+				names(path2Genes) = pathways
+				hKEGGgenes <- unique(unlist(path2Genes, use.names=FALSE))		
+				hKEGGgenes <-  hKEGGgenes[!is.na(hKEGGgenes)]					
+				genes2Path = sapply(hKEGGgenes, function(g) names(path2Genes)[sapply(path2Genes, function(p) any(g == p))]) # this is probably faster than calling get.pathways.by.genes for larger datasets
+				genes2Path = genes2Path[geneIDs.conv]
+				genes2Path = genes2Path[!is.na(names(genes2Path))]
+			}
+			genes2Path = sapply(genes2Path, function(g) sapply(g, function(gg) sub(paste("path:",organism,sep=""),"", gg)))							
+			KEGGgenes = genes2Path[sapply(genes2Path, length) > 0]
 			cat("Information from KEGG package available for ", length(KEGGgenes), " genes ...\n")
 			KEGGgenes = lapply(KEGGgenes, function(kg) unique(c(kg,  unlist(parentPaths[kg]))))		
-		}
-		if(!flyBase  | length(grep(":", KEGGgenes)) > 0){
-			anno.genes = gene2pathway:::KEGG2Entrez(names(KEGGgenes), geneID.list=KEGG2Entrez.tab, organism=organism)
+		}		
+		if(length(grep(":", names(KEGGgenes))) > 0){
+			if(is.null(KEGG2Entrez.tab))
+				anno.genes = sub(paste(organism,":",sep=""), "", names(KEGGgenes))
+			else
+				anno.genes = gene2pathway:::KEGG2Entrez(names(KEGGgenes), geneID.list=KEGG2Entrez.tab, organism=organism)
 			names(KEGGgenes) = anno.genes			
 		}
 		if(!is.null(gene2Domains)  && length(intersect(names(KEGGgenes), geneIDs)) == 0)
@@ -120,7 +131,7 @@ gene2pathway = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism
 	names(byKEGG) = names(totallist)
 	if(useKEGG){
 		totallist[names(KEGGgenes)] = KEGGgenes
-		byKEGG[names(KEGGgenes)] = TRUE
+		byKEGG[names(KEGGgenes)] = TRUE		
 	}
 	if(exists("kegg_hierarchy", envir=gene2pathwayEnv))
 		kegg_hierarchy = get("kegg_hierarchy", envir=gene2pathwayEnv)
@@ -133,6 +144,8 @@ gene2pathway = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism
 	totallist[is.na(names(totallist))] = NA
 	gene2Pathname = sapply(totallist, function(gp) pathnames[as.character(gp)])	
 	names(gene2Pathname) = names(totallist)
+	if(useKEGG & KEGG.package & length(setdiff(AnnotationDbi::ls(KEGGPATHID2NAME), names(pathnames))) > 0)
+		warning("There is a mismatch between KEGG.db and latest KEGG pathway identifiers. Result may be corrupt. Please update your KEGG.db package!")
 	cat("finished\n")
 	list(gene2Path=totallist, gene2Pathname=gene2Pathname, byKEGG=byKEGG, scores=scores)
 }

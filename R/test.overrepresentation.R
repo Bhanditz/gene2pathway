@@ -1,4 +1,4 @@
-test.overrepresentation = function(genesOfInterest, predpath, KEGGonly=FALSE, cutoff=0.1){
+test.overrepresentation = function(genesOfInterest, predpath, KEGGonly=FALSE, cutoff=0.1, min.conf=0.9, adj.method="BY"){
 	others = setdiff(names(predpath$gene2Path), genesOfInterest)
 	if(KEGGonly){
 		KEGGgenes = names(predpath$byKEGG[predpath$byKEGG])
@@ -7,7 +7,7 @@ test.overrepresentation = function(genesOfInterest, predpath, KEGGonly=FALSE, cu
 		others = intersect(others, KEGGgenes)
 	}
 	else{
-		gene2Path = predpath$gene2Path
+		gene2Path = predpath$gene2Path[unlist(predpath$scores) >= min.conf]
 	}
 	pathways = setdiff(unlist(gene2Path), NA)	
 	freqsig = table(unlist(gene2Path[genesOfInterest]))
@@ -17,7 +17,7 @@ test.overrepresentation = function(genesOfInterest, predpath, KEGGonly=FALSE, cu
 		conf.tab[is.na(conf.tab)] = 0
 		fisher.test(conf.tab, alternative="g")$p.value
 	})
-	p.values = p.adjust(p.values, method="BY")
+	p.values = p.adjust(p.values, method=adj.method)
 	p.values = p.values[p.values < cutoff]
 	if(exists("kegg_hierarchy", envir=gene2pathwayEnv))
 		kegg_hierarchy = get("kegg_hierarchy", envir=gene2pathwayEnv)
@@ -25,7 +25,10 @@ test.overrepresentation = function(genesOfInterest, predpath, KEGGonly=FALSE, cu
 		kegg_hierarchy = gene2pathway:::getKEGGHierarchy(level1Only=c(), level2Only=c())
 		assign("kegg_hierarchy", kegg_hierarchy, envir=gene2pathwayEnv)		
 	}
-	pathnames = c(kegg_hierarchy$pathNamesLev1, kegg_hierarchy$pathNamesLev2, kegg_hierarchy$pathNamesLev3)	
+	pathnames = c(kegg_hierarchy$pathNamesLev1, kegg_hierarchy$pathNamesLev2, kegg_hierarchy$pathNamesLev3)		
+	if(length(intersect(names(p.values), names(pathnames))) != length(p.values))
+		warning("There is a mismatch between KEGG.db and latest KEGG pathway identifiers. Result may be corrupt. Please update your KEGG.db package!")
+	p.values = p.values[intersect(names(p.values), names(pathnames))]
 	p.values = as.data.frame(cbind(pathnames[names(p.values)],p.values))
 	colnames(p.values) = c("pathname", "p.value")
 	p.values

@@ -27,4 +27,9 @@ The model structure. See \code{\link{classificationModelSignalTrans}} for detail
 }
 \author{ Holger Froehlich }
 \seealso{ \code{\link{gene2pathway.signaltrans}}, \code{\link{classificationModelSignalTrans}}}
+\examples{
+\dontrun{
+	retrain.signaltrans() # retrain classification model for signal transduction pathways for human
+}
+}
 \keyword{ file }% at least one, from doc/KEYWORDS

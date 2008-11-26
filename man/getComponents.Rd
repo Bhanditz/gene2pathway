@@ -20,6 +20,7 @@ color.pathway.by.elements(pathway.id, elements)
 \item{pathway.id}{KEGG pathway ID, e.g. "path:hsa04012"}
 \item{elements}{KEGG element IDs: character vector of numbers}
 }
+%
 \details{
 All functions use the KEGG SOAP service.
 }
@@ -31,6 +32,7 @@ getComponents: a list with the entries
 get.elements.by.pathway: list, see <URL http://www.genome.jp/kegg/soap/doc/keggapi\_manual.html> for details
 
 color.pathway.by.elements: an URL of a colored gif file, see <URL http://www.genome.jp/kegg/soap/doc/keggapi\_manual.html> for details
+
 }
 \author{ Holger Froehlich }
 \examples{
