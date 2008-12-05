@@ -36,7 +36,10 @@ buildTrainingSet = function(minnmap=30, level1Only="Metabolism", level2Only="Gen
 	genes2Path = genes2Path[sapply(genes2Path, length) > 0]
 	hKEGGgenes = names(genes2Path)		
 	if(length(grep(":", hKEGGgenes)) > 0){
-		hKEGGgenes = gene2pathway:::KEGG2Entrez(hKEGGgenes, organism=organism)	
+		if(organism == "hsa")
+			hKEGGgenes = sub(paste(organism,":",sep=""), "", hKEGGgenes)
+		else
+			hKEGGgenes = gene2pathway:::KEGG2Entrez(hKEGGgenes, organism=organism)	
 		names(genes2Path) = hKEGGgenes
 	}
 	cat("done \n")
@@ -79,11 +82,11 @@ buildTrainingSet = function(minnmap=30, level1Only="Metabolism", level2Only="Gen
 	code_vector = code_vector[,colnames(labels)]
 	code_vector = code_vector[rowSums(code_vector) > 0,]
 	
-	parentsLev1 = which(colnames(labels) %in% kegg_hierarchy$pathIDsLev1)
-	parentsLev2 = which(colnames(labels) %in% kegg_hierarchy$pathIDsLev2)
-	parentsLev12 = which(colnames(labels) %in% c(kegg_hierarchy$pathIDsLev1, kegg_hierarchy$pathIDsLev2))
+	kegg_hierarchy$parentsLev1 = which(colnames(labels) %in% kegg_hierarchy$pathIDsLev1)
+	kegg_hierarchy$parentsLev2 = which(colnames(labels) %in% kegg_hierarchy$pathIDsLev2)
+	kegg_hierarchy$parentsLev12 = which(colnames(labels) %in% c(kegg_hierarchy$pathIDsLev1, kegg_hierarchy$pathIDsLev2))
 	
 	treesizes = colMeans(code_vector)
 	
-	list(features=features, labels=labels, treesizes=treesizes, parentPaths=parentPaths, parentsLev1=parentsLev1, parentsLev2=parentsLev2, parentsLev12=parentsLev12)
+	list(features=features, labels=labels, treesizes=treesizes, kegg_hierarchy=kegg_hierarchy)
 }

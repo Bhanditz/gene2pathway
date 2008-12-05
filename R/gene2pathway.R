@@ -1,4 +1,4 @@
-gene2pathway = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism="hsa", useKEGG=TRUE, KEGG.package=TRUE){
+gene2pathway = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism="hsa", useKEGG=TRUE, KEGG.package=FALSE){
 	if(is.null(geneIDs) & is.null(gene2Domains))
 		stop("You have to provide either a list of Entrez gene IDs or a mapping of genes to InterPro domains")
 	if(!exists("gene2pathwayEnv"))
@@ -23,12 +23,12 @@ gene2pathway = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism
 	if(class(model) == "model"){
 		alldomains = model$alldomains		
 		pathways = model$allpathways		
-		parentPaths = model$parentPaths		
+		kegg_hierarchy = model$kegg_hierarchy
 	}
 	else{
 		alldomains = model[[1]]$alldomains				
 		pathways = model[[1]]$allpathways
-		parentPaths = model[[1]]$parentPaths
+		kegg_hierarchy = model[[1]]$kegg_hierarchy
 	}
 	if(useKEGG){		
 		if(KEGG.package){
@@ -70,7 +70,7 @@ gene2pathway = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism
 			KEGGgenes = lapply(KEGGgenes, function(kg) sub(organism,"",kg))
 			KEGGgenes = KEGGgenes[!is.na(KEGGgenes)]
 			cat("Information from KEGG package available for ", length(KEGGgenes), " genes ...\n")
-			KEGGgenes = lapply(KEGGgenes, function(kg) unique(c(kg,  unlist(parentPaths[kg]))))
+			KEGGgenes = lapply(KEGGgenes, function(kg) unique(c(kg,  unlist(kegg_hierarchy$parentPaths[kg]))))
 		}
 		else{ # slow			
 			if(length(grep(":", geneIDs.conv)) == 0)
@@ -90,7 +90,7 @@ gene2pathway = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism
 			genes2Path = sapply(genes2Path, function(g) sapply(g, function(gg) sub(paste("path:",organism,sep=""),"", gg)))							
 			KEGGgenes = genes2Path[sapply(genes2Path, length) > 0]
 			cat("Information from KEGG package available for ", length(KEGGgenes), " genes ...\n")
-			KEGGgenes = lapply(KEGGgenes, function(kg) unique(c(kg,  unlist(parentPaths[kg]))))		
+			KEGGgenes = lapply(KEGGgenes, function(kg) unique(c(kg,  unlist(kegg_hierarchy$parentPaths[kg]))))		
 		}		
 		if(length(grep(":", names(KEGGgenes))) > 0){
 			if(is.null(KEGG2Entrez.tab))
@@ -133,12 +133,13 @@ gene2pathway = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism
 		totallist[names(KEGGgenes)] = KEGGgenes
 		byKEGG[names(KEGGgenes)] = TRUE		
 	}
-	if(exists("kegg_hierarchy", envir=gene2pathwayEnv))
-		kegg_hierarchy = get("kegg_hierarchy", envir=gene2pathwayEnv)
-	else{
-		kegg_hierarchy = gene2pathway:::getKEGGHierarchy(level1Only=c(), level2Only=c())
-		assign("kegg_hierarchy", kegg_hierarchy, envir=gene2pathwayEnv)		
-	}
+	
+# 	if(exists("kegg_hierarchy", envir=gene2pathwayEnv))
+# 		kegg_hierarchy = get("kegg_hierarchy", envir=gene2pathwayEnv)
+# 	else{
+# 		kegg_hierarchy = gene2pathway:::getKEGGHierarchy(level1Only=c(), level2Only=c())
+# 		assign("kegg_hierarchy", kegg_hierarchy, envir=gene2pathwayEnv)		
+# 	}
 	pathnames = c(kegg_hierarchy$pathNamesLev1, kegg_hierarchy$pathNamesLev2, kegg_hierarchy$pathNamesLev3)		
 	totallist[totallist == ""] = NA
 	totallist[is.na(names(totallist))] = NA

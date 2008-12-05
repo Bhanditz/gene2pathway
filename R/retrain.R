@@ -5,10 +5,10 @@ retrain = function(minnmap=30, level1Only="Metabolism", level2Only="Genetic Info
 	trainall = function(x, y){
 		ytmp = y
 		ytmp[ytmp == 0] = -1	
-		codes = gene2pathway:::code_train(x, ytmp, traindat$parentsLev1, traindat$parentsLev2, traindat$parentsLev12)	
+		codes = gene2pathway:::code_train(x, ytmp, traindat$kegg_hierarchy$parentsLev1, traindat$kegg_hierarchy$parentsLev2, traindat$kegg_hierarchy$parentsLev12)	
 		# fit model at all hierarchy levels
-		fit = gene2pathway:::struct_train(codes$code, y, traindat$treesizes, traindat$parentPaths)
-		model = list(W=fit$W, C=fit$C, detectors=codes$detectors, used_domains=codes$domains, alldomains=colnames(x), allpathways=colnames(fit$C), treesizes=traindat$treesizes, parentPaths=traindat$parentPaths)
+		fit = gene2pathway:::struct_train(codes$code, y, traindat$treesizes, traindat$kegg_hierarchy$parentPaths)
+		model = list(W=fit$W, C=fit$C, detectors=codes$detectors, used_domains=codes$domains, alldomains=colnames(x), allpathways=colnames(fit$C), treesizes=traindat$treesizes, kegg_hierarchy=traindat$kegg_hierarchy)
 		class(model) = "model"
 		model
 	}
@@ -37,10 +37,10 @@ retrain.signaltrans = function(minnmap=10, organism="hsa", gene2Domains=NULL, re
 	trainall = function(x, y){
 		ytmp = y
 		ytmp[ytmp == 0] = -1	
-		codes = gene2pathway:::code_train(x, ytmp, traindat$parentsLev1, traindat$parentsLev2, traindat$parentsLev12)	
+		codes = gene2pathway:::code_train(x, ytmp, traindat$kegg_hierarchy$parentsLev1, traindat$kegg_hierarchy$parentsLev2, traindat$kegg_hierarchy$parentsLev12)	
 		# fit model at all hierarchy levels
-		fit = gene2pathway:::struct_train(codes$code, y, traindat$treesizes, traindat$parentPaths)
-		model = list(W=fit$W, C=fit$C, detectors=codes$detectors, used_domains=codes$domains, alldomains=colnames(x), allpathways=colnames(fit$C), treesizes=traindat$treesizes, parentPaths=traindat$parentPaths, elemIDs=traindat$elemIDs)
+		fit = gene2pathway:::struct_train(codes$code, y, traindat$treesizes, traindat$kegg_hierarchy$parentPaths)
+		model = list(W=fit$W, C=fit$C, detectors=codes$detectors, used_domains=codes$domains, alldomains=colnames(x), allpathways=colnames(fit$C), treesizes=traindat$treesizes, kegg_hierarchy=traindat$kegg_hierarchy, elemIDs=traindat$elemIDs)
 		class(model) = "model"
 		model
 	}

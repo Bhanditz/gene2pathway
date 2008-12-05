@@ -23,16 +23,16 @@ gene2pathway.signaltrans = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NU
 	if(class(model) == "model"){
 		alldomains = model$alldomains
 		elemIDs = model$elemIDs
-		pathways = model$allpathways		
-		parentPaths = model$parentPaths
+		pathways = model$allpathways				
+		kegg_hierarchy = model$kegg_hierarchy
 	}
 	else{
 		alldomains = model[[1]]$alldomains		
 		elemIDs = model[[1]]$elemIDs
-		pathways = model[[1]]$allpathways
-		parentPaths = model[[1]]$parentPaths
+		pathways = model[[1]]$allpathways		
+		kegg_hierarchy = model[[1]]$kegg_hierarchy		
 	}
-	roots = unique(unlist(parentPaths))
+	roots = unique(unlist(kegg_hierarchy$parentPaths))
 	if(useKEGG){			
 		cat("Using KEGG information from SOAP service ...\n")			
 		organisms=list.organisms()
@@ -120,18 +120,17 @@ gene2pathway.signaltrans = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NU
 		byKEGG[names(KEGGgenes)] = TRUE
 	}	
 	components[names(gene2Path)] = sapply(gene2Path, function(gp){			
-		 lapply(intersect(gp, names(parentPaths)), function(gpp){			
+		 lapply(intersect(gp, names(kegg_hierarchy$parentPaths)), function(gpp){			
 			p = unlist(strsplit(gpp, "\\."))
 			unlist(elemIDs[[p[1]]][p[2]])			
 		})				
-	})
-
-	if(exists("kegg_hierarchy", envir=gene2pathwayEnv))
-		kegg_hierarchy = get("kegg_hierarchy", envir=gene2pathwayEnv)
-	else{
-		kegg_hierarchy = gene2pathway:::getKEGGHierarchy(level1Only=c(), level2Only=c())
-		assign("kegg_hierarchy", kegg_hierarchy, envir=gene2pathwayEnv)		
-	}
+	})	
+# 	if(exists("kegg_hierarchy", envir=gene2pathwayEnv))
+# 		kegg_hierarchy = get("kegg_hierarchy", envir=gene2pathwayEnv)
+# 	else{
+# 		kegg_hierarchy = gene2pathway:::getKEGGHierarchy(level1Only=c(), level2Only=c())
+# 		assign("kegg_hierarchy", kegg_hierarchy, envir=gene2pathwayEnv)		
+# 	}
 	pathnames = c(kegg_hierarchy$pathNamesLev1, kegg_hierarchy$pathNamesLev2, kegg_hierarchy$pathNamesLev3)		
 	totallist[totallist == ""] = NA
 	totallist[is.na(names(totallist))] = NA

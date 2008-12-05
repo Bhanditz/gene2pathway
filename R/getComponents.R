@@ -23,7 +23,7 @@ getComponents = function(pathway.id){
 			compGenes = sapply(comp, function(c) unlist(sapply(elems[c], function(e) e$name)))
 # 			geneIDs = sapply(compGenes, function(g) sub(paste(organism,":",sep=""),"", g))
 			organism = gsub("[0-9]","",strsplit(pathway.id, ":")[[1]][2])
-			geneID.list = getURL(paste("ftp://ftp.genome.jp/pub/kegg/genes/organisms/", organism, "/", organism, "_ncbi-geneid.list",sep=""))
+			geneID.list = RCurl:::getURL(paste("ftp://ftp.genome.jp/pub/kegg/genes/organisms/", organism, "/", organism, "_ncbi-geneid.list",sep=""))
 			geneIDs = sapply(compGenes, function(g) gene2pathway:::KEGG2Entrez(g, geneID.list=geneID.list, organism=organism))
 		}	
 	}			

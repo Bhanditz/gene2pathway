@@ -6,8 +6,11 @@ test.overrepresentation = function(genesOfInterest, predpath, KEGGonly=FALSE, cu
 		genesOfInterest = intersect(genesOfInterest, KEGGgenes)
 		others = intersect(others, KEGGgenes)
 	}
-	else{
-		gene2Path = predpath$gene2Path[unlist(predpath$scores) >= min.conf]
+	else{		
+		sc = sapply(predpath$scores, is.numeric)		
+		sc[which(sc)] = sapply(predpath$scores[sc], function(s) s >= min.conf)		
+		sc[is.na(sc)] = FALSE
+		gene2Path = predpath$gene2Path[sc | predpath$byKEGG]
 	}
 	pathways = setdiff(unlist(gene2Path), NA)	
 	freqsig = table(unlist(gene2Path[genesOfInterest]))
@@ -18,7 +21,7 @@ test.overrepresentation = function(genesOfInterest, predpath, KEGGonly=FALSE, cu
 		fisher.test(conf.tab, alternative="g")$p.value
 	})
 	p.values = p.adjust(p.values, method=adj.method)
-	p.values = p.values[p.values < cutoff]
+	p.values = p.values[p.values <= cutoff]
 	if(exists("kegg_hierarchy", envir=gene2pathwayEnv))
 		kegg_hierarchy = get("kegg_hierarchy", envir=gene2pathwayEnv)
 	else{
@@ -26,9 +29,9 @@ test.overrepresentation = function(genesOfInterest, predpath, KEGGonly=FALSE, cu
 		assign("kegg_hierarchy", kegg_hierarchy, envir=gene2pathwayEnv)		
 	}
 	pathnames = c(kegg_hierarchy$pathNamesLev1, kegg_hierarchy$pathNamesLev2, kegg_hierarchy$pathNamesLev3)		
-	if(length(intersect(names(p.values), names(pathnames))) != length(p.values))
-		warning("There is a mismatch between KEGG.db and latest KEGG pathway identifiers. Result may be corrupt. Please update your KEGG.db package!")
-	p.values = p.values[intersect(names(p.values), names(pathnames))]
+# 	if(length(intersect(names(p.values), names(pathnames))) != length(p.values))
+# 		warning("There is a mismatch between KEGG.db and latest KEGG pathway identifiers. Result may be corrupt. Please update your KEGG.db package!")
+# 	p.values = p.values[intersect(names(p.values), names(pathnames))]
 	p.values = as.data.frame(cbind(pathnames[names(p.values)],p.values))
 	colnames(p.values) = c("pathname", "p.value")
 	p.values

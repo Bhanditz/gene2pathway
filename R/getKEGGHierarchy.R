@@ -1,5 +1,5 @@
 getKEGGHierarchy = function(level1Only="Metabolism", level2Only="Genetic Information Processing"){
-	kegg = getURL("ftp://ftp.genome.jp/pub/kegg/brite/ko/ko00001.keg")
+	kegg = RCurl:::getURL("ftp://ftp.genome.jp/pub/kegg/brite/ko/ko00001.keg")
 	kegg = unlist(strsplit(kegg,"\n"))
 	level1 = grep("A<B>", kegg)
 	level2 = grep("B  <B>", kegg)
@@ -35,3 +35,4 @@ getKEGGHierarchy = function(level1Only="Metabolism", level2Only="Genetic Informa
 	code_vector = code_vector[,(cs > 0) & (cs < nrow(code_vector))]
 	list(code_vector=code_vector, parentPaths=parentPaths, pathIDsLev1=pathIDsLev1, pathIDsLev2=pathIDsLev2, pathIDsLev3=pathIDsLev3, pathNamesLev1=pathNamesLev1, pathNamesLev2=pathNamesLev2, pathNamesLev3=pathNamesLev3)
 }
+

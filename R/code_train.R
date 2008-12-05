@@ -8,7 +8,9 @@ code_train = function(x, y, parentsLev1, parentsLev2, parentsLev12){
 		cat("Level detector ",i, "\n\n")	
 		ytmp = y[,i]
 		pos = which(ytmp == 1)
-		neg = which(ytmp == -1)				
+		neg = which(ytmp == -1)	
+# 		print(parentsLev1)
+# 		print(parentsLev2)			
 		# If possible, only take those negatives, which belong to the same super-level				
 		if(i %in% parentsLev1)
 			sel = 1:length(neg)

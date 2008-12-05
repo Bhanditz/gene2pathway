@@ -6,7 +6,7 @@
 Predicts a gene's membership to a branch in the KEGG hierarchy via the contained InterPro domains.
 }
 \usage{
-gene2pathway(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism="hsa", useKEGG=TRUE, KEGG.package=TRUE)
+gene2pathway(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism="hsa", useKEGG=TRUE, KEGG.package=FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

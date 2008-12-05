@@ -14,7 +14,7 @@
 \item{alldomains}{all InterPro domains used to build feature vectors}
 \item{allpathways}{hierarchy branches, which can be predicted}
 \item{treesizes}{relative size of hierarchy below the corresponding branch}
-\item{parentPaths}{a list with information on all higher hierarchy branches for each pathway}
+\item{kegg\_hierarchy}{a nested list with information (parent branches, pathway names, pathway IDs, hierarchy level) on all higher hierarchy branches for each pathway}
 }		
 \author{Holger Froehlich}
 \seealso{\code{\link{classificationModelSignalTrans}}}

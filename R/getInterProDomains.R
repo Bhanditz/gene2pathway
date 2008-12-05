@@ -64,7 +64,7 @@ getInterProDomains = function(geneIDs, gene2Domains=NULL, organism="hsa", alldom
 		gene2Domains = gene2Domains[!empty]
 	}		
 	
-	interpro_hierarchy = getURL("ftp://ftp.ebi.ac.uk/pub/databases/interpro/ParentChildTreeFile.txt")
+	interpro_hierarchy = RCurl:::getURL("ftp://ftp.ebi.ac.uk/pub/databases/interpro/ParentChildTreeFile.txt")
 	interpro_hierarchy = unlist(strsplit(interpro_hierarchy,"\n"))
 	doms = c()
 	oldlevel = -2

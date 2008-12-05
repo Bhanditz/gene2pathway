@@ -68,11 +68,11 @@ buildTrainingSet.signaltrans = function(minnmap=10, organism="hsa", remove.dupli
 	treesizes[names(freq)] = freq
 	treesizes = treesizes / sum(treesizes)
 	
-	parentsLev1 = which(colnames(labels) %in% names(clust))
-	parentsLev2 = setdiff(1:ncol(labels), parentsLev1)
-	parentsLev12 = c()
-	elems = elems[colnames(labels)[parentsLev1]]
+	kegg_hierarchy$parentsLev1 = which(colnames(labels) %in% names(clust))
+	kegg_hierarchy$parentsLev2 = setdiff(1:ncol(labels), kegg_hierarchy$parentsLev1)
+	kegg_hierarchy$parentsLev12 = c()
+	elems = elems[colnames(labels)[kegg_hierarchy$parentsLev1]]
 	
-	list(features=features, labels=labels, treesizes=treesizes, parentPaths=parentPaths, parentsLev1=parentsLev1, parentsLev2=parentsLev2, parentsLev12=parentsLev12, elemIDs=elems)
+	list(features=features, labels=labels, treesizes=treesizes, elemIDs=elems, kegg_hierarchy=kegg_hierarchy)
 }
 
