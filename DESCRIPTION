@@ -1,6 +1,6 @@
 Package: gene2pathway
-Version: 1.2.0
-Date: 2008-12-05
+Version: 1.4.0
+Date: 2009-04-22
 Title: Prediction of KEGG pathway membership for individual genes based
         on InterPro domain signatures
 Author: Holger Froehlich <h.froehlich@dkfz.de>, contributions by Tim
@@ -24,6 +24,6 @@ LazyLoad: Yes
 biocViews: Microarray, Bioinformatics, Classification,
         GraphsAndNetworks, Pathways
 License: GPL (>= 2)
-Packaged: 2009-04-21 10:53:45 UTC; biocbuild
+Packaged: 2009-11-12 10:24:12 UTC; biocbuild
 Repository: CRAN
-Date/Publication: 2009-05-10 19:00:37
+Date/Publication: 2009-11-13 10:43:02

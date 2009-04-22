@@ -32,7 +32,8 @@ gene2pathway.signaltrans = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NU
 		pathways = model[[1]]$allpathways		
 		kegg_hierarchy = model[[1]]$kegg_hierarchy		
 	}
-	roots = unique(unlist(kegg_hierarchy$parentPaths))
+	roots = unique(names(kegg_hierarchy$parentPaths))
+    roots = intersect(roots, pathways)
 	if(useKEGG){			
 		cat("Using KEGG information from SOAP service ...\n")			
 		organisms=list.organisms()
@@ -120,10 +121,10 @@ gene2pathway.signaltrans = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NU
 		byKEGG[names(KEGGgenes)] = TRUE
 	}	
 	components[names(gene2Path)] = sapply(gene2Path, function(gp){			
-		 lapply(intersect(gp, names(kegg_hierarchy$parentPaths)), function(gpp){			
+		 lapply(gp[grep("\\.", gp)], function(gpp){			
 			p = unlist(strsplit(gpp, "\\."))
 			unlist(elemIDs[[p[1]]][p[2]])			
-		})				
+		})
 	})	
 # 	if(exists("kegg_hierarchy", envir=gene2pathwayEnv))
 # 		kegg_hierarchy = get("kegg_hierarchy", envir=gene2pathwayEnv)
