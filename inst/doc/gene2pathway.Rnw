@@ -12,7 +12,7 @@
 \usepackage{graphicx}
 \usepackage{longtable}
 \usepackage{tabularx}
-\usepackage{booktabs}
+% \usepackage{booktabs}
 \usepackage[latin1]{inputenc}
 \newcommand{\gene}[1]{\emph{#1}}
 
