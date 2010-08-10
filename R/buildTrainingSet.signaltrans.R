@@ -25,6 +25,8 @@ buildTrainingSet.signaltrans = function(minnmap=10, organism="hsa", remove.dupli
 	childs = unlist(sapply(childs, function(c) paste(c, seq(1:allen[c]),sep=".")))
 	levels = c(roots, childs)	
 	hKEGGgenes = unique(unlist(clust))		
+	if(length(hKEGGgenes) == 0)
+		stop("No connected components could be found!")
 	cat("done\n")
 	
 	if(!is.null(gene2Domains) && length(intersect(hKEGGgenes, names(gene2Domains))) == 0)

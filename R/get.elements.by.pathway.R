@@ -1,5 +1,5 @@
 get.elements.by.pathway = function(pathway.id){    		
-	KEGGserver <-  SSOAP:::SOAPServer("http://soap.genome.jp/keggapi/request_v6.0.cgi")
+	KEGGserver <-  SSOAP:::SOAPServer("http://soap.genome.jp/keggapi/request_v6.2.cgi")
 	KEGGxmlns = "SOAP/KEGG"
 	KEGGaction = "SOAP/KEGG"
 	KEGGsoapns = "1.1"

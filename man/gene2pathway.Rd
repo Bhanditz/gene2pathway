@@ -6,7 +6,7 @@
 Predicts a gene's membership to a branch in the KEGG hierarchy via the contained InterPro domains.
 }
 \usage{
-gene2pathway(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism="hsa", useKEGG=TRUE, KEGG.package=FALSE)
+gene2pathway(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism="hsa", useKEGG=TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -15,10 +15,9 @@ gene2pathway(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism="hsa", use
   \item{gene2Domains}{By default associations between genes and InterPro domains are retrieved via biomaRt from Ensembl. Alternatively, the user can provide its own mapping of genes to InterPro domains in form of a list here (see details).}
   \item{organism}{KEGG letter code describing an organism.  Please refer to <URL:http://www.genome.jp/kegg-bin/create\_kegg\_menu> for a complete list of organisms (and their letter codes) supported by KEGG.}
   \item{useKEGG}{ Should KEGG information instead of a prediction be used when possible?}
-  \item{KEGG.package}{If useKEGG=TRUE: Instead of retrieving information directly from KEGG, one can use the KEGG.db package instead, which is significantly faster. However, the KEGG.db package only supports a fraction of organisms so far. Please refer to the manual pages of the KEGG.db package for further information. Default: use KEGG.db package, if useKEGG=TRUE}
 }
 \details{
-A hierarchical classification model based on SVMs and a ranking perceptron is used. This model is usually additionally bagged to improve prediction qualitiy. The model is stored in the package data directory and is recommended to be retrained from time to time.
+A hierarchical classification model based on SVMs and a ranking perceptron is used. This model is usually additionally bagged to improve prediction quality. The model is stored in the package data directory and is recommended to be retrained from time to time.
 
 The current version of the KEGG hierarchy is always retrieved directly from KEGG via FTP. By default associations between genes and InterPro domains are retrieved automatically via biomaRt from Ensembl. Please refer to <URL:http://www.ebi.ac.uk/ensembl/> for a list of organisms supported by Ensembl. Alternatively to using Ensembl and biomaRt, the user can provide its own mapping of genes to InterPro domains in form of a list. This especially allows for using organisms, which are supported by KEGG, but not by Ensembl so far. The list has the form genes -> InterPro domains, and each list entry is named by a gene identifier of the corresponding gene. If useKEGG=TRUE, Entrez gene IDs or FlyBase identifiers have to be used. Otherwise, arbitrary identifiers are allowed.
 }

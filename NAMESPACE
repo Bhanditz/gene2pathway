@@ -1,4 +1,3 @@
-import(KEGG.db)
 import(KEGGSOAP)
 importFrom("kernlab", "ksvm", "kernelMatrix", "alphaindex", "coef", "SVindex", "predict")
 importFrom("AnnotationDbi", "mget", "ls")

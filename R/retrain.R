@@ -1,8 +1,8 @@
-retrain = function(minnmap=30, level1Only="Metabolism", level2Only="Genetic Information Processing", organism="hsa", gene2Domains=NULL, KEGG.package=FALSE, remove.duplicates=FALSE, use.bagging=TRUE, nbag=11){		
+retrain = function(minnmap=30, level1Only="Metabolism", level2Only="Genetic Information Processing", organism="hsa", gene2Domains=NULL, remove.duplicates=FALSE, use.bagging=TRUE, nbag=11){		
 	
 	# 1. train codes
 	# 2. used codes to train structure
-	trainall = function(x, y){
+	trainall = function(x, y){		
 		ytmp = y
 		ytmp[ytmp == 0] = -1	
 		codes = gene2pathway:::code_train(x, ytmp, traindat$kegg_hierarchy$parentsLev1, traindat$kegg_hierarchy$parentsLev2, traindat$kegg_hierarchy$parentsLev12)	
@@ -22,7 +22,7 @@ retrain = function(minnmap=30, level1Only="Metabolism", level2Only="Genetic Info
 		model
 	}
 
-	traindat = gene2pathway:::buildTrainingSet(minnmap=minnmap, level1Only=level1Only, level2Only=level2Only, organism=organism, remove.duplicates=remove.duplicates, gene2Domains=gene2Domains, KEGG.package=KEGG.package)	
+	traindat = gene2pathway:::buildTrainingSet(minnmap=minnmap, level1Only=level1Only, level2Only=level2Only, organism=organism, remove.duplicates=remove.duplicates, gene2Domains=gene2Domains)	
 	if(use.bagging)
 		modelKEGG = trainallBag(traindat$features, traindat$labels)
 	else

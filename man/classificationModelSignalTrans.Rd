@@ -1,5 +1,7 @@
 \name{classificationModelSignalTrans}
 \alias{classificationModelSignalTrans}
+\alias{classificationModelSignalTrans_dme}
+\alias{classificationModelSignalTrans_hsa}
 \alias{modelSignalTrans}
 \docType{data}	
 \title{Hierarchical Classification Model for Signaling Transduction Pathways and Pathway Components}

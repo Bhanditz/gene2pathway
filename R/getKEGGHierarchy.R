@@ -1,18 +1,53 @@
-getKEGGHierarchy = function(level1Only="Metabolism", level2Only="Genetic Information Processing"){
-	kegg = RCurl:::getURL("ftp://ftp.genome.jp/pub/kegg/brite/ko/ko00001.keg")
-	kegg = unlist(strsplit(kegg,"\n"))
-	level1 = grep("A<B>", kegg, ignore.case=T)
-	level2 = grep("B  <B>", kegg, ignore.case=T)
-	level3 = grep("\\[PATH:", kegg, ignore.case=F)
-	pathIDsLev1 = sapply(kegg[level1], substr, 5, 9)
-	pathIDsLev2 = sapply(kegg[level2], substr, 7, 11)
-	pathIDsLev3 = sapply(kegg[level3], substr, 6, 10)
-	pathNamesLev1 = sapply(kegg[level1], function(k) substr(k, 11, gregexpr("<",k)[[1]][2]-1))
-	pathNamesLev2 = sapply(kegg[level2], function(k) substr(k, 13, gregexpr("<",k)[[1]][2]-1))
-	pathNamesLev3 = sapply(kegg[level3], function(k) substr(k, 12, gregexpr("\\[",k)[[1]][1]-2))
+getKEGGHierarchy = function(level1Only="Metabolism", level2Only="Genetic Information Processing"){	
+#	kegg = RCurl:::getURL("ftp://ftp.genome.jp/pub/kegg/brite/ko/ko00001.keg")
+#	kegg = unlist(strsplit(kegg,"\n"))
+#	firstchar = sapply(kegg, substr, 1, 1)
+#	slen = sapply(kegg, nchar)
+#	level1 = grep("A", firstchar, ignore.case=T)
+#	level2 = setdiff(grep("B", firstchar, ignore.case=T), which(slen<=1))
+#	level3 = grep("\\[PATH:", kegg, ignore.case=F)
+#		
+#	pathNamesLev1 = sapply(kegg[level1], function(k){
+#				start = regexpr("<b>",k)
+#				stop = regexpr("</b>", k)
+#				substr(k, start[1] + attr(start, "match.length"), stop[1] - 1)
+#			})
+#	pathNamesLev2 = sapply(kegg[level2], function(k){
+#				start = regexpr("<b>",k)
+#				stop = regexpr("</b>", k)
+#				substr(k, start[1] + attr(start, "match.length"), stop[1] - 1)
+#			})
+#	pathNamesLev3 = sapply(kegg[level3], function(k){
+#				start = regexpr("[0-9][0-9][0-9][0-9][0-9]",k)
+#				stop = regexpr("\\[PATH:", k)
+#				substr(k, start[1] + attr(start, "match.length") + 1, stop[1] - 2)
+#			})
+#	pathIDsLev1 = pathNamesLev1
+#	pathIDsLev2 = pathNamesLev2
+#	pathIDsLev3 = sapply(kegg[level3], function(k){
+#				start = regexpr("[0-9][0-9][0-9][0-9][0-9]",k)				
+#				substr(k, start[1], start[1]+ attr(start, "match.length")-1)
+#			})
+#	names(pathNamesLev1) = pathIDsLev1
+#	names(pathNamesLev2) = pathIDsLev2
+#	names(pathNamesLev3) = pathIDsLev3	
+	
+	data(keggOrthDF)
+	level1 = which(keggOrthDF$depth == 1)
+	level2 = which(keggOrthDF$depth == 2)
+	level3 = which(keggOrthDF$depth == 3)
+	pathIDsLev1 = keggOrthDF$tag[level1]
+	pathIDsLev2 = keggOrthDF$tag[level2]
+	pathIDsLev3 = keggOrthDF$tag[level3]
+	pathNamesLev1 = keggOrthDF$term[level1]
+	pathNamesLev2 = keggOrthDF$term[level2]
+	pathNamesLev3 = keggOrthDF$term[level3]
+	names(pathIDsLev1) = pathNamesLev1
+	names(pathIDsLev2) = pathNamesLev2
+	names(pathIDsLev3) = pathNamesLev3
 	names(pathNamesLev1) = pathIDsLev1
 	names(pathNamesLev2) = pathIDsLev2
-	names(pathNamesLev3) = pathIDsLev3	
+	names(pathNamesLev3) = pathIDsLev3
 
 	parentPaths = lapply(level2, function(p) pathIDsLev1[which.max(level1[level1 < p])])	
 	parentPaths = c(parentPaths, lapply(level3, function(p) c(pathIDsLev1[which.max(level1[level1 < p])], pathIDsLev2[which.max(level2[level2 < p])])))

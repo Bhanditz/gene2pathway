@@ -82,7 +82,7 @@ Below we show an example analysis with \emph{gene2pathway} for two genes: For th
 
 <<>>=
 library(gene2pathway)
-gene2pathway("FBgn0035006", flyBase=TRUE, organism="dme", KEGG.package=TRUE) 
+gene2pathway("FBgn0030327", flyBase=TRUE, organism="dme") 
 pred.comp = gene2pathway.signaltrans("387129", organism="hsa") # prediction of the signaling pathway component for Entrez gene ID 387129 for human
 pred.comp
 @

@@ -1,4 +1,4 @@
-gene2pathway = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism="hsa", useKEGG=TRUE, KEGG.package=FALSE){
+gene2pathway = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism="hsa", useKEGG=TRUE){
 	if(is.null(geneIDs) & is.null(gene2Domains))
 		stop("You have to provide either a list of Entrez gene IDs or a mapping of genes to InterPro domains")
 	if(!exists("gene2pathwayEnv"))
@@ -31,20 +31,20 @@ gene2pathway = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism
 		kegg_hierarchy = model[[1]]$kegg_hierarchy
 	}
 	if(useKEGG){		
-		if(KEGG.package){
-			cat("Using KEGG information from KEGG.db package ...\n")			
-			organisms = unique(gsub("[0-9]*","",AnnotationDbi::ls(KEGGPATHID2EXTID)))
-			if(!(organism %in% organisms))
-				stop(paste("Organism '", organism, "' is unknown in KEGG package! Please retry with KEGG.package=FALSE (slow). Please refer also to <URL:http://www.genome.jp/kegg-bin/create_kegg_menu> for a complete list of organisms supported by KEGG.", sep=""))	
-			if((organism == "dme") & !flyBase){
-				geneIDs = unlist(AnnotationDbi::mget(geneIDs, org.Dm.egFLYBASE, ifnotfound=NA))
-				geneIDs = geneIDs[!is.na(geneIDs)]
-				if(length(geneIDs) == 0)
-					stop("No mapping Entrez gene ID -> FlyBase found!")
-				flyBase = TRUE
-			}
-		}		
-		else{
+#		if(KEGG.package){
+#			cat("Using KEGG information from KEGG.db package ...\n")			
+#			organisms = unique(gsub("[0-9]*","",AnnotationDbi::ls(KEGGPATHID2EXTID)))
+#			if(!(organism %in% organisms))
+#				stop(paste("Organism '", organism, "' is unknown in KEGG package! Please retry with KEGG.package=FALSE (slow). Please refer also to <URL:http://www.genome.jp/kegg-bin/create_kegg_menu> for a complete list of organisms supported by KEGG.", sep=""))	
+#			if((organism == "dme") & !flyBase){
+#				geneIDs = unlist(AnnotationDbi::mget(geneIDs, org.Dm.egFLYBASE, ifnotfound=NA))
+#				geneIDs = geneIDs[!is.na(geneIDs)]
+#				if(length(geneIDs) == 0)
+#					stop("No mapping Entrez gene ID -> FlyBase found!")
+#				flyBase = TRUE
+#			}
+#		}		
+#		else{
 			cat("Using KEGG information from SOAP service ...\n")
 			organisms = list.organisms()
 			if(!(organism %in% names(organisms)))
@@ -56,7 +56,7 @@ gene2pathway = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism
 					stop("No mapping FlyBase -> Entrez gene ID found!")				
 				flyBase = FALSE
 			}
-		}
+#		}
 		if(!flyBase & (organism != "hsa")){
 			KEGG2Entrez.tab = gene2pathway:::KEGG2Entrez(organism=organism)
 			geneIDs.conv = gene2pathway:::Entrez2ORF.internal(geneIDs, KEGG2Entrez.tab, organism=organism)	
@@ -64,19 +64,21 @@ gene2pathway = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism
 		else{
 			geneIDs.conv = geneIDs
 			KEGG2Entrez.tab = NULL
-		}
-		if(KEGG.package){ # fast						
-			KEGGgenes = AnnotationDbi::mget(geneIDs.conv, KEGGEXTID2PATHID, ifnotfound=NA)		
-			KEGGgenes = lapply(KEGGgenes, function(kg) sub(organism,"",kg))
-			KEGGgenes = KEGGgenes[!is.na(KEGGgenes)]
-			cat("Information from KEGG package available for ", length(KEGGgenes), " genes ...\n")
-			KEGGgenes = lapply(KEGGgenes, function(kg) unique(c(kg,  unlist(kegg_hierarchy$parentPaths[kg]))))
-		}
-		else{ # slow			
+		}		
+#		if(KEGG.package){ # fast						
+#			KEGGgenes = AnnotationDbi::mget(geneIDs.conv, KEGGEXTID2PATHID, ifnotfound=NA)		
+#			KEGGgenes = lapply(KEGGgenes, function(kg) sub(organism,"",kg))
+#			KEGGgenes = KEGGgenes[!is.na(KEGGgenes)]
+#			cat("Information from KEGG package available for ", length(KEGGgenes), " genes ...\n")
+#			KEGGgenes = lapply(KEGGgenes, function(kg) unique(c(kg,  unlist(kegg_hierarchy$parentPaths[kg]))))
+#		}
+#		else{ # slow						
 			if(length(grep(":", geneIDs.conv)) == 0)
 				geneIDs.conv = paste(organism,":",geneIDs.conv,sep="")
-			if(length(geneIDs.conv) < 200)
-				genes2Path = sapply(geneIDs.conv, function(g) get.pathways.by.genes(c(g,"")))
+			if(length(geneIDs.conv) < 200){
+				genes2Path = lapply(geneIDs.conv, function(g) get.pathways.by.genes(c(g,"")))
+				names(genes2Path) = geneIDs.conv
+			}
 			else{
 				pathways = names(list.pathways(organism))
 				path2Genes = try(lapply(pathways, get.genes.by.pathway))
@@ -87,13 +89,13 @@ gene2pathway = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism
 				genes2Path = genes2Path[geneIDs.conv]
 				genes2Path = genes2Path[!is.na(names(genes2Path))]
 			}
-			genes2Path = sapply(genes2Path, function(g) sapply(g, function(gg) sub(paste("path:",organism,sep=""),"", gg)))							
+			genes2Path = lapply(genes2Path, function(g) sapply(g, function(gg) sub(paste("path:",organism,sep=""),"", gg)))							
 			KEGGgenes = genes2Path[sapply(genes2Path, length) > 0]
-			cat("Information from KEGG package available for ", length(KEGGgenes), " genes ...\n")
+			cat("Information from KEGG available for ", length(KEGGgenes), " genes ...\n")
 			KEGGgenes = lapply(KEGGgenes, function(kg) unique(c(kg,  unlist(kegg_hierarchy$parentPaths[kg]))))		
-		}		
-		if(length(grep(":", names(KEGGgenes))) > 0){
-			if(is.null(KEGG2Entrez.tab))
+#		}		
+		if(length(grep(":", names(KEGGgenes))) > 0){			
+			if(organism == "hsa")
 				anno.genes = sub(paste(organism,":",sep=""), "", names(KEGGgenes))
 			else
 				anno.genes = gene2pathway:::KEGG2Entrez(names(KEGGgenes), geneID.list=KEGG2Entrez.tab, organism=organism)
@@ -103,8 +105,8 @@ gene2pathway = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism
 			warning("There may be a conflict between KEGG Entrez gene IDs and the gene identifiers in list 'gene2Domains'.\n Gene identifiers in 'gene2Domains' should be Entrez gene IDs, if useKEGG=TRUE.")
 	}
 	else
-		KEGGgenes = list()			
-	topredict = setdiff(geneIDs, names(KEGGgenes))
+		KEGGgenes = list()				
+	topredict = setdiff(geneIDs, names(KEGGgenes))	
 	if(length(topredict) > 0){		
 		cat(length(topredict), " genes to predict\n")			
 		features = gene2pathway:::getInterProDomains(topredict, gene2Domains=gene2Domains, alldoms=alldomains, organism=organism, flyBase=flyBase)	
@@ -133,7 +135,6 @@ gene2pathway = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism
 		totallist[names(KEGGgenes)] = KEGGgenes
 		byKEGG[names(KEGGgenes)] = TRUE		
 	}
-	
 # 	if(exists("kegg_hierarchy", envir=gene2pathwayEnv))
 # 		kegg_hierarchy = get("kegg_hierarchy", envir=gene2pathwayEnv)
 # 	else{
@@ -145,8 +146,8 @@ gene2pathway = function(geneIDs=NULL, flyBase=FALSE, gene2Domains=NULL, organism
 	totallist[is.na(names(totallist))] = NA
 	gene2Pathname = sapply(totallist, function(gp) pathnames[as.character(gp)])	
 	names(gene2Pathname) = names(totallist)
-	if(useKEGG & KEGG.package & length(setdiff(AnnotationDbi::ls(KEGGPATHID2NAME), names(pathnames))) > 0)
-		warning("There is a mismatch between KEGG.db and latest KEGG pathway identifiers. Result may be corrupt. Please update your KEGG.db package!")
+#	if(useKEGG & length(setdiff(AnnotationDbi::ls(KEGGPATHID2NAME), names(pathnames))) > 0)
+#		warning("There is a mismatch between KEGG.db and latest KEGG pathway identifiers. Result may be corrupt. Please update your KEGG.db package!")
 	cat("finished\n")
 	list(gene2Path=totallist, gene2Pathname=gene2Pathname, byKEGG=byKEGG, scores=scores)
 }

@@ -1,5 +1,7 @@
 \name{classificationModel}
 \alias{classificationModel}
+\alias{classificationModel_hsa}
+\alias{classificationModel_dme}
 \alias{modelKEGG}
 \docType{data}	
 \title{Hierarchical Classification Model}

@@ -1,0 +1,14 @@
+     citHeader("To cite package 'gene2pathway' in publications use:")
+     
+     desc <- packageDescription("gene2pathway")
+     year <- sub(".*(2[[:digit:]]{3})-.*", "\\1", desc$Date)
+     vers <- paste("R package version", desc$Version)
+     
+     citEntry(entry="article",
+              title = "Predicting KEGG Pathway Membership via Domain Signatures",
+              author = personList(as.person("Holger Froehlich"), as.person("Tim Beissbarth")),
+              journal="Bioinformatics",
+              number=24,
+              pages="2137-2142",                                  
+              year = "2008",              
+              textVersion = "Holger Froehlich, Tim Beissbarth (2008). Predicting KEGG Pathway Membership via Domain Signatures. Bioinformatics. 24:2137-2142")

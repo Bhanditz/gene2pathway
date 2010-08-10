@@ -1,21 +1,21 @@
-buildTrainingSet = function(minnmap=30, level1Only="Metabolism", level2Only="Genetic Information Processing", organism="hsa", remove.duplicates=FALSE, gene2Domains=NULL, KEGG.package=FALSE){		
-	if(KEGG.package){ # this is fast			
-		cat("Retrieving KEGG information via KEGG.db package ...\n")
-		organisms = unique(gsub("[0-9]*","",AnnotationDbi::ls(KEGGPATHID2EXTID)))		
-		if(!(organism %in% organisms))
-			stop(paste("Organism '", organism, "' is unknown in KEGG package! Please retry with KEGG.package=FALSE (slow). Please refer also to <URL:http://www.genome.jp/kegg-bin/create_kegg_menu> for a complete list of organisms supported by KEGG.", sep=""))
-		hKEGGids <- grep(paste("^",organism,sep=""), AnnotationDbi::ls(KEGGPATHID2EXTID), value=TRUE)
-		path2Genes <- AnnotationDbi::mget(hKEGGids, KEGGPATHID2EXTID)
-		hKEGGgenes <- unique(unlist(path2Genes, use.names=FALSE))
-		hKEGGgenes <-  hKEGGgenes[!is.na(hKEGGgenes)]
-		genes2Path = AnnotationDbi::mget(hKEGGgenes,KEGGEXTID2PATHID)
-		genes2Path = sapply(genes2Path, function(g) sapply(g, function(gg) sub(organism,"", gg)))
-		if(organism == "dme")
-			flyBase = TRUE		
-		else
-			flyBase = FALSE
-	}
-	else{ # this is slow
+buildTrainingSet = function(minnmap=30, level1Only="Metabolism", level2Only="Genetic Information Processing", organism="hsa", remove.duplicates=FALSE, gene2Domains=NULL){		
+#	if(KEGG.package){ # this is fast			
+#		cat("Retrieving KEGG information via KEGG.db package ...\n")
+#		organisms = unique(gsub("[0-9]*","",AnnotationDbi::ls(KEGGPATHID2EXTID)))		
+#		if(!(organism %in% organisms))
+#			stop(paste("Organism '", organism, "' is unknown in KEGG package! Please retry with KEGG.package=FALSE (slow). Please refer also to <URL:http://www.genome.jp/kegg-bin/create_kegg_menu> for a complete list of organisms supported by KEGG.", sep=""))
+#		hKEGGids <- grep(paste("^",organism,sep=""), AnnotationDbi::ls(KEGGPATHID2EXTID), value=TRUE)
+#		path2Genes <- AnnotationDbi::mget(hKEGGids, KEGGPATHID2EXTID)
+#		hKEGGgenes <- unique(unlist(path2Genes, use.names=FALSE))
+#		hKEGGgenes <-  hKEGGgenes[!is.na(hKEGGgenes)]
+#		genes2Path = AnnotationDbi::mget(hKEGGgenes,KEGGEXTID2PATHID)
+#		genes2Path = sapply(genes2Path, function(g) sapply(g, function(gg) sub(organism,"", gg)))
+#		if(organism == "dme")
+#			flyBase = TRUE		
+#		else
+#			flyBase = FALSE
+#	}
+#	else{ # this is slow
 		cat("Retrieving KEGG information via SOAP ...\n")
 		organisms=list.organisms()
 		if(!(organism %in% names(organisms)))
@@ -28,7 +28,7 @@ buildTrainingSet = function(minnmap=30, level1Only="Metabolism", level2Only="Gen
 		genes2Path = sapply(hKEGGgenes, function(g) names(path2Genes)[sapply(path2Genes, function(p) any(g == p))]) # this is probably faster than calling get.pathways.by.genes		
 		genes2Path = sapply(genes2Path, function(g) sapply(g, function(gg) sub(paste("path:",organism,sep=""),"", gg)))
 		flyBase = FALSE
-	}
+#	}
 	kegg_hierarchy = gene2pathway:::getKEGGHierarchy(level1Only, level2Only)
 	parentPaths = kegg_hierarchy$parentPaths
 	code_vector = kegg_hierarchy$code_vector	
