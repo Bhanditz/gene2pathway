@@ -1,4 +1,4 @@
-test.overrepresentation = function(genesOfInterest, predpath, KEGGonly=FALSE, cutoff=0.1, min.conf=0.9, adj.method="BY"){
+test.overrepresentation = function(genesOfInterest, predpath, KEGGonly=FALSE, cutoff=0.1, min.conf=0.9, adj.method="BY"){	
 	others = setdiff(names(predpath$gene2Path), genesOfInterest)
 	if(KEGGonly){
 		KEGGgenes = names(predpath$byKEGG[predpath$byKEGG])
@@ -31,7 +31,7 @@ test.overrepresentation = function(genesOfInterest, predpath, KEGGonly=FALSE, cu
 	pathnames = c(kegg_hierarchy$pathNamesLev1, kegg_hierarchy$pathNamesLev2, kegg_hierarchy$pathNamesLev3)		
 # 	if(length(intersect(names(p.values), names(pathnames))) != length(p.values))
 # 		warning("There is a mismatch between KEGG.db and latest KEGG pathway identifiers. Result may be corrupt. Please update your KEGG.db package!")
-# 	p.values = p.values[intersect(names(p.values), names(pathnames))]
+ 	p.values = p.values[intersect(names(p.values), names(pathnames))]
 	p.values = as.data.frame(cbind(pathnames[names(p.values)],p.values))
 	colnames(p.values) = c("pathname", "p.value")
 	p.values

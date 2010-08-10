@@ -1,5 +1,5 @@
 Package: gene2pathway
-Version: 1.6.1
+Version: 1.8.1
 Date: 2010-8-10
 Title: Prediction of KEGG pathway membership for individual genes based
         on InterPro domain signatures
@@ -24,6 +24,6 @@ LazyLoad: Yes
 biocViews: Microarray, Bioinformatics, Classification,
         GraphsAndNetworks, Pathways
 License: GPL (>= 2)
-Packaged: 2010-08-12 14:36:53 UTC; frohlich
+Packaged: 2010-10-27 09:29:26 UTC; biocbuild
 Repository: CRAN
-Date/Publication: 2010-08-12 16:11:19
+Date/Publication: 2010-12-07 08:28:00
